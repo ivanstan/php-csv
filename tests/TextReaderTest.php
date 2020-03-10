@@ -9,12 +9,10 @@ class TextReaderTest extends TestCase
     public function testBatchRead(): void
     {
         $file = (new TextFileReader('./tests/data/simple.list'))
-            ->skipEmpty(false);
+            ->skipEmpty(true);
 
         foreach ($file->batch(2) as $batch) {
             self::assertEquals(count($batch), 2);
         }
-
-        $file = null;
     }
 }

@@ -8,8 +8,8 @@ class TextFileReader extends TextFile
 
     public function get(): \Generator
     {
-        while (($data = $this->file->fgets()) !== false) {
-            yield trim($data);
+        while (!$this->file->eof()) {
+            yield trim($this->file->fgets());
         }
     }
 
@@ -30,12 +30,16 @@ class TextFileReader extends TextFile
             }
 
             if (($counter % $size) === 0) {
-                yield $chunk;
+                if (!empty($chunk)) {
+                    yield $chunk;
+                }
                 $chunk = [];
             }
         }
 
-        yield $chunk;
+        if (!empty($chunk)) {
+            yield $chunk;
+        }
     }
 
     public function isSkipEmpty(): bool
