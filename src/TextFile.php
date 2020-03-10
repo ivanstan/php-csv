@@ -2,7 +2,7 @@
 
 namespace PhpCsv;
 
-class BatchReader
+class TextFile
 {
     protected \SplFileObject $file;
 
