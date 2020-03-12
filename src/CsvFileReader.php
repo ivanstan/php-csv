@@ -7,6 +7,7 @@ use PhpCsv\Metadata\CsvFileMetadata;
 class CsvFileReader extends TextFileReader
 {
     protected bool $firstLineIsHeader = false;
+    protected bool $fetchAssoc = true;
     protected array $header = [];
     protected CsvFileMetadata $metadata;
 
@@ -95,6 +96,34 @@ class CsvFileReader extends TextFileReader
     {
         $metadata = $this->metadata;
 
-        return str_getcsv($line, $metadata->getDelimiter(), $metadata->getEnclosure(), $metadata->getEscape());
+        $row = str_getcsv($line, $metadata->getDelimiter(), $metadata->getEnclosure(), $metadata->getEscape());
+
+        foreach ($row as $key => $field) {
+            $row[$key] = trim($field);
+
+            if ($this->fetchAssoc && $columnName = $this->getColumnName($key)) {
+                $row[$columnName] = $row[$key];
+                unset($row[$key]);
+            }
+        }
+
+        return $row;
+    }
+
+    public function isFetchAssoc(): bool
+    {
+        return $this->fetchAssoc;
+    }
+
+    protected function getColumnName(int $columnNumber): ?string
+    {
+        return $this->header[$columnNumber] ?? null;
+    }
+
+    public function fetchAssoc(bool $fetchAssoc): self
+    {
+        $this->fetchAssoc = $fetchAssoc;
+
+        return $this;
     }
 }

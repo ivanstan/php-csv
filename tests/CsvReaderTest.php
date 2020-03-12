@@ -15,6 +15,7 @@ class CsvReaderTest extends TestCase
         foreach ($file->batch(2) as $batch) {
             foreach ($batch as $record) {
                 self::assertEquals(count($record), 6);
+                self::assertEquals($file->getHeader(), array_keys($record));
             }
 
             self::assertEquals(count($batch), 2);
