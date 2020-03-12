@@ -2,7 +2,9 @@
 
 namespace PhpCsv;
 
-class TextFile
+use LimitIterator;
+
+class TextFile implements \Countable
 {
     protected \SplFileObject $file;
 
@@ -14,5 +16,17 @@ class TextFile
     public function getFileObject(): \SplFileObject
     {
         return $this->file;
+    }
+
+    public function countRaw(): int
+    {
+        $this->file->seek(PHP_INT_MAX);
+
+        return $this->file->key();
+    }
+
+    public function count(): int
+    {
+        return $this->countRaw();
     }
 }

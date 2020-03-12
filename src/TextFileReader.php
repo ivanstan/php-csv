@@ -2,15 +2,38 @@
 
 namespace PhpCsv;
 
+use LimitIterator;
+
 class TextFileReader extends TextFile
 {
-    private bool $skipEmpty = false;
+    protected LimitIterator $iterator;
+    protected bool $skipEmpty = false;
+
+    public function __construct(string $filename)
+    {
+        parent::__construct($filename);
+
+        $this->iterator = new LimitIterator($this->file, 0, -1);
+    }
+
+    public function setLimit(int $offset, int $count = -1): self
+    {
+        $this->iterator = new LimitIterator($this->file, $offset, $count);
+
+        return $this;
+    }
 
     public function get(): \Generator
     {
-        while (!$this->file->eof()) {
-            yield trim($this->file->fgets());
+        foreach ($this->iterator as $line) {
+            yield trim($line);
         }
+    }
+
+    public function getLine(int $position): string
+    {
+        $this->file->seek($position);
+        return trim($this->file->getCurrentLine());
     }
 
     public function batch(int $size): ?\Generator
